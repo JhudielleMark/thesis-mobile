@@ -1,23 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ImageBackground, FlatList, Image, Alert, Button } from 'react-native';
-import axios from 'axios';
+import { StyleSheet, Text, View, ImageBackground, Button, TextInput, Alert } from 'react-native'
+import React, { useState } from 'react'
 
 const InventoryScreen = () => {
-  const [inventoryItems, setInventoryItems] = useState([]);
+  const [items, setItems] = useState(['Item 1', 'Item 2', 'Item 3']);
+  const [newItem, setNewItem] = useState('');
 
-  // Fetch inventory data from the backend
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/inventory'); // Update with your backend URL
-        setInventoryItems(response.data);
-      } catch (error) {
-        console.error('Error fetching inventory data:', error);
-        Alert.alert('Error', 'Failed to load inventory data');
-      }
-    };
-    fetchInventory();
-  }, []);
+  const addItem = () => {
+    if (newItem.trim()) {
+      setItems([...items, newItem]);
+      setNewItem('');
+    } else {
+      Alert.alert('Error', 'Please enter a valid item name');
+    }
+  };
 
   return (
     <ImageBackground
@@ -25,75 +20,67 @@ const InventoryScreen = () => {
       style={styles.background}
     >
       <View style={styles.container}>
-        <Text style={styles.header}>Inventory</Text>
+        <Text style={styles.title}>Inventory</Text>
 
-        {/* Add New Item Button */}
-        <Button
-          title="Add New Item"
-          onPress={() => console.log('Navigate to add new item screen')}
-        />
+        <View style={styles.itemList}>
+          {items.map((item, index) => (
+            <Text key={index} style={styles.item}>{item}</Text>
+          ))}
+        </View>
 
-        <FlatList
-          data={inventoryItems}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.itemCard}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemDescription}>{item.description}</Text>
-              <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text>
-              <Image
-                source={{ uri: item.qrCode }} // Display QR code image
-                style={styles.qrCodeImage}
-              />
-            </View>
-          )}
-        />
+        <View style={styles.addItemSection}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter new item"
+            value={newItem}
+            onChangeText={setNewItem}
+          />
+          <Button title="Add Item" onPress={addItem} />
+        </View>
       </View>
     </ImageBackground>
   );
 };
+
 
 const styles = StyleSheet.create({
   background: {
     flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
+    padding: 20,
   },
   container: {
     flex: 1,
-    padding: 20,
+    justifyContent: 'space-between',
   },
-  header: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 20,
   },
-  itemCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
+  itemList: {
+    flex: 1,
+    marginVertical: 20,
   },
-  itemName: {
-    color: '#fff',
+  item: {
     fontSize: 18,
-    fontWeight: 'bold',
+    color: '#000',
+    marginVertical: 5,
   },
-  itemDescription: {
-    color: '#fff',
-    fontSize: 14,
+  addItemSection: {
+    alignItems: 'center',
   },
-  itemQuantity: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  qrCodeImage: {
-    width: 150,
-    height: 150,
-    marginTop: 10,
+  input: {
+    width: '80%',
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
   },
 });
+
 
 export default InventoryScreen;

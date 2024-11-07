@@ -6,16 +6,16 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 const CameraScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [scanning, setScanning] = useState(true); // State to toggle scanning
-  const [scanData, setScanData] = useState(null); // Store scanned QR code data
+  const [scanning, setScanning] = useState(true); 
+  const [scanData, setScanData] = useState(null); 
 
   useEffect(() => {
     (async () => {
-      // Request camera permission
+    
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
       
-      // Request barcode scanner permission
+    
       const { status: barcodeStatus } = await BarCodeScanner.requestPermissionsAsync();
       if (barcodeStatus !== 'granted') {
         console.log('Permission for barcode scanner was denied');
@@ -23,7 +23,7 @@ const CameraScreen = ({ navigation }) => {
     })();
   }, []);
 
-  // If permissions are not granted, show an error message
+
   if (hasPermission === null) {
     return <Text>Requesting camera permission...</Text>;
   }
@@ -31,10 +31,10 @@ const CameraScreen = ({ navigation }) => {
     return <Text>No access to camera</Text>;
   }
 
-  // Handle QR Code scanning
+
   const handleBarCodeScanned = ({ type, data }) => {
-    setScanning(false); // Stop scanning after one successful scan
-    setScanData(data); // Store the scanned data
+    setScanning(false); 
+    setScanData(data); 
     console.log('QR Code scanned:', data);
   };
 
